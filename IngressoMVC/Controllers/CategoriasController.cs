@@ -17,7 +17,13 @@ namespace IngressoMVC.Controllers
 
         public IActionResult Index() => View(_context.Categorias);
 
-        public IActionResult Detalhes(int id) => View(_context.Categorias.Find(id));
+        public IActionResult Detalhes(int id)
+        {
+            var result = _context.Categorias.FirstOrDefault(x => x.Id == id);
+            if (result == null)
+                return View("NotFound");
+            return View(_context.Categorias.Find(id));
+        }
 
         public IActionResult Criar() => View();
 
@@ -27,18 +33,18 @@ namespace IngressoMVC.Controllers
             if(!ModelState.IsValid) return View(categoriaDto);
             Categoria categoria = new Categoria(categoriaDto.Nome);
             _context.Add(categoria);
-            _context.SaveChanges();
+            
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Atualizar(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null) return View("NotFound");
 
             var result = _context.Categorias.FirstOrDefault(a => a.Id == id);
 
-            if (result == null) return View();          
-            
+            if (result == null) return View("NotFound");
+
             return View(result);
         }
 
